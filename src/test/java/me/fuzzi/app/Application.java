@@ -1,6 +1,6 @@
 package me.fuzzi.app;
 
-import me.fuzzi.tundraweb.WebApplication;
+import me.fuzzi.breeze.WebApplication;
 
 public class Application extends WebApplication {
     public static void main(String[] args) {

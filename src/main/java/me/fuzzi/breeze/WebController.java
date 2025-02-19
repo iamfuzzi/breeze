@@ -1,4 +1,4 @@
-package me.fuzzi.tundraweb;
+package me.fuzzi.breeze;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package me.fuzzi.tundraweb;
+package me.fuzzi.breeze;
 
 public class NoSuchFileException extends RuntimeException {
     protected NoSuchFileException(String path) {
