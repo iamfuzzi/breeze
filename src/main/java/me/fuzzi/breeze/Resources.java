@@ -15,11 +15,6 @@ public class Resources {
     protected static InputStream getResourceAsStream(String path) {
         ClassLoader classLoader = WebApplication.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(path);
-
-        if (inputStream == null) {
-            throw new NoSuchFileException(path);
-        }
-
         return inputStream;
     }
 
@@ -53,8 +48,6 @@ public class Resources {
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-        } else {
-            throw new NoSuchFileException(path);
         }
         return directories.toArray(new String[0]);
     }
@@ -78,8 +71,6 @@ public class Resources {
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-        } else {
-            throw new NoSuchFileException(path);
         }
         return files.toArray(new String[0]);
     }
