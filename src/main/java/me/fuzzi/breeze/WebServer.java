@@ -13,6 +13,9 @@ public class WebServer {
     private final String ip;
     private final int port;
     private final HttpServer server;
+    public HttpServer getServer() {
+        return server;
+    }
     protected WebServer(String ip, int port) {
         this.port = port;
         this.ip = ip;
