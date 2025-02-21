@@ -15,18 +15,18 @@ public abstract class WebPage implements WebPageInterface {
     private final String web;
     private final HttpServer server;
     protected HttpExchange exchange;
-    public void start() {
+    public void load() {
         server.createContext(web, new HttpHandler() {
             @Override
             public void handle(HttpExchange ex) throws IOException {
                 exchange = ex;
                 String content = page();
-                if (content.contains("$tu:")) {
+                if (content.contains("%br:")) {
                     String[] values = WebController.list.values().toArray(new String[0]);
                     String[] keys = WebController.list.keySet().toArray(new String[0]);
 
                     for (int i = 0; i < values.length; i++) {
-                        content = content.replace("$tu:" + keys[i] + "$", values[i]);
+                        content = content.replace("%br:" + keys[i] + "%", values[i]);
                     }
                 }
                 exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
@@ -36,5 +36,6 @@ public abstract class WebPage implements WebPageInterface {
                 os.close();
             }
         });
+        Variables.page();
     }
 }
