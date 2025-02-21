@@ -3,8 +3,8 @@ package me.fuzzi.breeze;
 import me.fuzzi.mytoml.TOMLObject;
 
 /**
- * <p>The main class for inheritance by all web applications of the Breeze framework.</p>
- * <p>It contains all the necessary tools for creating and editing your own web server.</p>
+ * <p>Главный класс для наследования всеми веб-приложениями, созданными на Breeze.</p>
+ * <p>Содержит все нужные инструменты для создания собственного веб-сайта.</p>
  * @author iamfuzzi
  * @version 1.0
  * @since 1.0
@@ -12,39 +12,51 @@ import me.fuzzi.mytoml.TOMLObject;
 public abstract class WebApplication {
 
     /**
-     * <p>The main method for launching the web application.</p>
-     * @param application to specify the required launch class
-     * @param args for processing launch arguments
+     * <p>Основной метод запуска веб-приложения.</p>
+     * @param application уточняет, какой запускаемый класс приложения будет запущен.
+     * @param args для обработки аргументов запуска (Обязательно написать -breeze для запуска!)
+     * @since 1.0
      */
     protected static void launch(WebApplication application, String[] args) {
-        for (String arg : args) {
-            if (arg.equals("-breeze")) {
-                System.out.println("""
-                         
+        Console.st.println("""
                            __   __   ___  ___ __  ___
                           |__) |__) |__  |__   / |__\s
                           |__) |  \\ |___ |___ /_ |___
                         """);
-                System.out.println("Loading Breeze version 1.0...");
-                System.out.println();
+
+        Console.out.println("Loading Breeze 1.0 (Dev Build)...");
+
+        boolean isLaunched = false;
+
+        for (String arg : args) {
+            if (arg.equals("-breeze")) {
 
                 Console.out.println("Initializing web server...");
                 application.init();
 
                 Console.out.println("Performing custom actions...");
                 application.actions();
+                application.reg();
+                application.regStatics();
 
-                Console.out.println("Server launch!");
-                application.start();
+                Console.out.println("Loaded " + Variables.getPage() + " web pages!");
 
-                return;
+                Console.out.println("Running server on " + application.server + "!");
+                application.server.start();
+
+                isLaunched = true;
             }
+        }
+
+        if (!isLaunched) {
+            Console.err.println("You need to run application with -breeze argument anywhere!");
         }
     }
 
     /**
-     * <p>Method for adding additional actions before the server starts.</p>
-     * <p>This is the method where classes inheriting from WebController should be loaded.</p>
+     * <p>Метод для реализации в классах, наследующих WebApplication.</p>
+     * <p>Позволяет установить собственные действия, которые происходят между действиями инициализации сервера и его запуском.</p>
+     * @since 1.0
      */
     protected abstract void actions();
 
@@ -63,16 +75,17 @@ public abstract class WebApplication {
 
                     String content = Resources.getResourceAsContent("web/" + name + "/" + name + ".html");
 
-                    if (content.contains("$tu:")) {
+                    if (content.contains("%br:")) {
                         String[] values = WebController.list.values().toArray(new String[0]);
                         String[] keys = WebController.list.keySet().toArray(new String[0]);
 
                         for (int i = 0; i < values.length; i++) {
-                            content = content.replace("$tu:" + keys[i] + "$", values[i]);
+                            content = content.replace("%br:" + keys[i] + "%", values[i]);
                         }
                     }
 
                     server.add(config.getString("resource." + name + ".web"), content);
+                    Variables.page();
                 }
             }
         }
@@ -81,12 +94,5 @@ public abstract class WebApplication {
         for (String fileName : Resources.getFilesInDirectory("static")) {
             server.add("/static/" + fileName, Resources.getResourceAsContent("static/" + fileName));
         }
-    }
-
-    private void start() {
-        reg();
-        regStatics();
-
-        server.start();
     }
 }
