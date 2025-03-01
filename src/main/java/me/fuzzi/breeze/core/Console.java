@@ -1,4 +1,4 @@
-package me.fuzzi.breeze;
+package me.fuzzi.breeze.core;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,6 +36,7 @@ public class Console {
          */
         public void println(Object message) {
             System.out.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(format)) + "] " + message);
+            Logger.logln("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(format)) + "] " + message);
         }
 
         /**
@@ -45,6 +46,7 @@ public class Console {
          */
         public void print(Object message) {
             System.out.print("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(format)) + "] " + message);
+            Logger.log("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(format)) + "] " + message);
         }
 
         private ConsoleOut() {} // Создание экземпляра класса только в классе Console.
@@ -72,6 +74,7 @@ public class Console {
          */
         public void println(Object message) {
             System.err.println("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(format)) + "] " + message);
+            Logger.logln("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(format)) + "] " + message);
         }
 
         /**
@@ -81,6 +84,7 @@ public class Console {
          */
         public void print(Object message) {
             System.err.print("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(format)) + "] " + message);
+            Logger.log("[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(format)) + "] " + message);
         }
 
         private ConsoleErr() {} // Создание экземпляра класса только в классе Console.
@@ -108,6 +112,7 @@ public class Console {
          */
         public void println(Object message) {
             System.out.println(message);
+            Logger.logln(message);
         }
 
         /**
@@ -117,6 +122,7 @@ public class Console {
          */
         public void print(Object message) {
             System.out.print(message);
+            Logger.log(message);
         }
 
         private ConsoleSt() {} // Создание экземпляра класса только в классе Console.
