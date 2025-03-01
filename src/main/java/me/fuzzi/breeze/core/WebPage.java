@@ -1,4 +1,4 @@
-package me.fuzzi.breeze;
+package me.fuzzi.breeze.core;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

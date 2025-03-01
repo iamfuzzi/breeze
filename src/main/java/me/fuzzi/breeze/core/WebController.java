@@ -1,4 +1,4 @@
-package me.fuzzi.breeze;
+package me.fuzzi.breeze.core;
 
 import java.util.HashMap;
 import java.util.Map;
