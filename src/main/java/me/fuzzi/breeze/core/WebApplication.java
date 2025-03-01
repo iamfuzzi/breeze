@@ -1,4 +1,4 @@
-package me.fuzzi.breeze;
+package me.fuzzi.breeze.core;
 
 import me.fuzzi.mytoml.TOMLObject;
 
@@ -36,10 +36,13 @@ public abstract class WebApplication {
 
                 Console.out.println("Performing custom actions...");
                 application.actions();
+
+                Console.out.println("Registering elements...");
                 application.reg();
                 application.regStatics();
 
                 Console.out.println("Loaded " + Variables.getPage() + " web pages!");
+                Console.out.println("Loaded " + Variables.getStatics() + " static files!");
 
                 Console.out.println("Running server on " + application.server + "!");
                 application.server.start();
@@ -60,13 +63,31 @@ public abstract class WebApplication {
      */
     protected abstract void actions();
 
+    /**
+     * <p>Экземпляр веб-сервера, который нужен для регистрации веб-страниц (server.getServer()).</p>
+     * @since 1.0
+     */
     protected WebServer server;
+
+    /**
+     * <p>Экземпляр TOML-конфигурации сервера.</p>
+     * @since 1.0
+     */
     protected TOMLObject config;
+
+    /**
+     * <p>Метод инициализации конфига и веб-сервера.</p>
+     * @since 1.0
+     */
     private void init() {
         config = new TOMLObject(Resources.getResourceAsContent("config.toml"));
         server = new WebServer(config.getString("main.ip"), config.getInt("main.port"));
     }
 
+    /**
+     * <p>Регистрирует все веб-файлы из ресурсов из папки web.</p>
+     * @since 1.0
+     */
     private void reg() {
         for (String name : Resources.getSubdirectories("web")) {
             if (config.hasKey("resource." + name + ".registered")) { // Если имеет регистрацию
@@ -90,9 +111,15 @@ public abstract class WebApplication {
             }
         }
     }
+
+    /**
+     * <p>Регистрирует все статические файлы из ресурсов из папки static.</p>
+     * @since 1.0
+     */
     private void regStatics() {
         for (String fileName : Resources.getFilesInDirectory("static")) {
             server.add("/static/" + fileName, Resources.getResourceAsContent("static/" + fileName));
+            Variables.statics();
         }
     }
 }
