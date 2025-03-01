@@ -1,4 +1,4 @@
-package me.fuzzi.breeze;
+package me.fuzzi.breeze.core;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -34,6 +34,21 @@ public class WebServer {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
                 byte[] response = content.getBytes(StandardCharsets.UTF_8);
+
+                String contentType = "text/html; charset=UTF-8";
+                if (path.endsWith(".png")) {
+                    contentType = "image/png";
+                } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+                    contentType = "image/jpeg";
+                } else if (path.endsWith(".gif")) {
+                    contentType = "image/gif";
+                } else if (path.endsWith(".css")) {
+                    contentType = "text/css; charset=UTF-8";
+                } else if (path.endsWith(".js")) {
+                    contentType = "application/javascript; charset=UTF-8";
+                }
+                exchange.getResponseHeaders().add("Content-Type", contentType);
+
                 exchange.sendResponseHeaders(200, response.length);
                 OutputStream os = exchange.getResponseBody();
                 os.write(response);
