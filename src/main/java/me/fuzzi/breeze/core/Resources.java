@@ -1,4 +1,4 @@
-package me.fuzzi.breeze;
+package me.fuzzi.breeze.core;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,15 +10,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * <p>Класс работы с ресурсами приложения.</p>
+ * <p>Его методы позволяют получать доступ к файлам из ресурсов и возвращать их как поток или содержимое.</p>
+ * @author iamfuzzi
+ * @version 1.0
+ * @since 1.0
+ */
 public class Resources {
 
+    /**
+     * <p>Возвращает файл и ресурсов как поток.</p>
+     * @param path определяет какой файл будет прочитан.
+     */
     protected static InputStream getResourceAsStream(String path) {
         ClassLoader classLoader = WebApplication.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(path);
         return inputStream;
     }
 
-    protected static String getResourceAsContent(String path) {
+    /**
+     * <p>Возвращает файл и ресурсов как его содержимое.</p>
+     * @param path определяет какой файл будет прочитан.
+     */
+    public static String getResourceAsContent(String path) {
         try (InputStream inputStream = getResourceAsStream(path)) {
             try (Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A")) {
                 return scanner.hasNext() ? scanner.next() : "";
@@ -28,6 +43,10 @@ public class Resources {
         }
     }
 
+    /**
+     * <p>Возвращает список всех папок, которые находятся в нужной папке.</p>
+     * @param path определяет родительскую папку.
+     */
     protected static String[] getSubdirectories(String path) {
         List<String> directories = new ArrayList<>();
 
@@ -49,9 +68,15 @@ public class Resources {
                 e.printStackTrace();
             }
         }
+
         return directories.toArray(new String[0]);
     }
-    protected static String[] getFilesInDirectory(String path) {
+
+    /**
+     * <p>Возвращает список всех файлов, которые находятся в нужной папке.</p>
+     * @param path определяет родительскую папку.
+     */
+    public static String[] getFilesInDirectory(String path) {
         List<String> files = new ArrayList<>();
 
         URL resourceUrl = WebApplication.class.getClassLoader().getResource(path);
@@ -72,6 +97,7 @@ public class Resources {
                 e.printStackTrace();
             }
         }
+
         return files.toArray(new String[0]);
     }
 }
