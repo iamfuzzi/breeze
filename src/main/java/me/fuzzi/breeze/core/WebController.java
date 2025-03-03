@@ -11,7 +11,12 @@ import java.util.Map;
  * @since 1.0
  */
 public abstract class WebController {
-    protected static Map<String, String> list = new HashMap<>();
+
+    /**
+     * <p>Список всех плейсхолдеров и их замен.</p>
+     * @since 1.0
+     */
+    static Map<String, String> list = new HashMap<>();
 
     /**
      * <p>Метод для добавления нового плейсхолдера.</p>
@@ -21,9 +26,11 @@ public abstract class WebController {
      */
     protected static void add(String id, String replacing) {
         list.put(id, replacing);
+        Variables.placeholder();
     }
 
     /**
+     * <p>Абстрактный метод всей логики контроллеров.</p>
      * @since 1.0
      */
     public abstract void init();
@@ -34,6 +41,7 @@ public abstract class WebController {
      */
     public void load() {
         init();
-        Console.out.println("Loading controllers...");
+        Console.out.println("Loading " + getClass().getSimpleName() + " controller...");
+        Variables.controller();
     }
 }
