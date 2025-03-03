@@ -8,21 +8,29 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * <p></p>
+ * <p>Класс логгера - инструмента для добавления логов в файл лога текущего процесса.</p>
  * @author iamfuzzi
  * @version 1.0
  * @since 1.0
  */
-public class Logger {
-    private Logger() {}
+class Logger {
+
+    /**
+     * <p>Файл конфига, нужен для добавления в него текста.</p>
+     * @since 1.0
+     */
     private static final File file;
+
+    // Указание файла конфига
     static {
         File logDir = new File("logs");
         if (!logDir.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             logDir.mkdirs();
         }
         file = new File("logs/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-dd-MM HH-mm-ss")) + ".log");
         try {
+            //noinspection ResultOfMethodCallIgnored
             file.createNewFile();
         } catch (IOException e) {
             Console.err.println(e);
@@ -30,24 +38,43 @@ public class Logger {
         }
     }
 
-    public static void logln(Object message) {
-        add(message, true);
-    }
+    /**
+     * <p>Добавляет текст в лог.</p>
+     * @param message добавляемый текст.
+     * @since 1.0
+     */
     public static void log(Object message) {
-        add(message, false);
+        logPrint(message, false);
     }
 
-    private static void add(Object message, boolean newLine) {
-        try (FileWriter fw = new FileWriter(file, true);
-             PrintWriter pw = new PrintWriter(fw)) {
+    /**
+     * <p>Добавляет текст в лог вместе с новой строкой.</p>
+     * @param message добавляемый текст.
+     * @since 1.0
+     */
+    public static void logln(Object message) {
+        logPrint(message, true);
+    }
+
+    /**
+     * <p>Метод для добавления информации в файл лога.</p>
+     * @param message добавляемый текст.
+     * @param newLine если нужен перенос на новую строку.
+     * @since 1.0
+     */
+    private static void logPrint(Object message, boolean newLine) {
+        try (FileWriter fileWriter = new FileWriter(file, true);
+             PrintWriter writer = new PrintWriter(fileWriter)) {
             if (newLine) {
-                pw.println(message);
+                writer.println(message);
             } else {
-                pw.print(message);
+                writer.print(message);
             }
         } catch (IOException e) {
             Console.err.println(e);
             System.exit(5051);
         }
     }
+
+    private Logger() {} // Без создания экземпляров класса.
 }
