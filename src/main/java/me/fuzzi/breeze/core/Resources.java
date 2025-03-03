@@ -76,7 +76,7 @@ public class Resources {
      * <p>Возвращает список всех файлов, которые находятся в нужной папке.</p>
      * @param path определяет родительскую папку.
      */
-    public static String[] getFilesInDirectory(String path) {
+    protected static String[] getFilesInDirectory(String path) {
         List<String> files = new ArrayList<>();
 
         URL resourceUrl = WebApplication.class.getClassLoader().getResource(path);
