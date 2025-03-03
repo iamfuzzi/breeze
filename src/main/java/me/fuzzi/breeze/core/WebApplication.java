@@ -37,12 +37,15 @@ public abstract class WebApplication {
                 Console.out.println("Performing custom actions...");
                 application.actions();
 
-                Console.out.println("Registering elements...");
+                Console.out.println("Registering resources...");
                 application.reg();
                 application.regStatics();
 
                 Console.out.println("Loaded " + Variables.getPage() + " web pages!");
                 Console.out.println("Loaded " + Variables.getStatics() + " static files!");
+                Console.out.println("Loaded " + Variables.getController() + " controllers and " + Variables.getPlaceholder() + " placeholders!");
+
+                Console.out.println("Starting a server...");
 
                 Console.out.println("Running server on " + application.server + "!");
                 application.server.start();
