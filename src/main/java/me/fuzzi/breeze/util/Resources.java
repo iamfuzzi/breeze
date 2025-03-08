@@ -26,9 +26,7 @@ public class Resources {
      * @param path определяет какой файл будет прочитан.
      */
     public static InputStream getResourceAsStream(String path) {
-        ClassLoader classLoader = WebApplication.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(path);
-        return inputStream;
+        return WebApplication.class.getClassLoader().getResourceAsStream(path);
     }
 
     /**
