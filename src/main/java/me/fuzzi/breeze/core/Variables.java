@@ -1,5 +1,7 @@
 package me.fuzzi.breeze.core;
 
+import me.fuzzi.mytoml.TOMLObject;
+
 /**
  * <p>Класс счетчиков. Содержит в себе эддеры (как сеттеры, но не принимают значение, просто добавляют к переменной +1) и геттеры переменных.</p>
  * <p>Переменные этого класса используются для получения и установки информации о загруженных ресурсах.</p>
@@ -7,8 +9,7 @@ package me.fuzzi.breeze.core;
  * @version 1.0
  * @since 1.0
  */
-class Variables {
-
+public class Variables {
     private static int page = 0;
     public static void page() {
         page++;
@@ -40,4 +41,43 @@ class Variables {
     public static void placeholder() {
         placeholder++;
     }
+
+    private static TOMLObject config;
+    static TOMLObject getConfig() {
+        return config;
+    }
+    static void setConfig(TOMLObject config) {
+        Variables.config = config;
+    }
+
+    private static String conf;
+    public static String getConf() {
+        return conf;
+    }
+    public static void setConf(String conf) {
+        Variables.conf = conf;
+    }
+
+    private static int users;
+    public static int getUsers() {
+        return users;
+    }
+    public static void plusUser() {
+        users++;
+        System.out.println(users);
+    }
+    public static void minusUser() {
+        users--;
+        System.out.println(users);
+    }
+
+    private static boolean monitor;
+    public static void monitor() {
+        monitor = !monitor;
+    }
+    public static boolean getMonitor() {
+        return monitor;
+    }
+
+    private Variables() {}
 }
