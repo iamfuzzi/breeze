@@ -1,5 +1,8 @@
 package me.fuzzi.breeze.core;
 
+import me.fuzzi.breeze.resources.ResourceMonitor;
+import me.fuzzi.breeze.util.Console;
+import me.fuzzi.breeze.util.Resources;
 import me.fuzzi.mytoml.TOMLObject;
 
 /**
@@ -18,6 +21,13 @@ public abstract class WebApplication {
      * @since 1.0
      */
     protected static void launch(WebApplication application, String[] args) {
+        for (String arg : args) {
+            if (arg.equals("-rm")) {
+                Variables.monitor();
+                ResourceMonitor.start();
+            }
+        }
+
         Console.st.println("""
                            __   __   ___  ___ __  ___
                           |__) |__) |__  |__   / |__\s
@@ -32,7 +42,7 @@ public abstract class WebApplication {
             if (arg.equals("-breeze")) {
 
                 Console.out.println("Initializing web server...");
-                application.init();
+                application.init(args);
 
                 Console.out.println("Performing custom actions...");
                 application.actions();
@@ -41,9 +51,9 @@ public abstract class WebApplication {
                 application.reg();
                 application.regStatics();
 
-                Console.out.println("Loaded " + Variables.getPage() + " web pages!");
-                Console.out.println("Loaded " + Variables.getStatics() + " static files!");
-                Console.out.println("Loaded " + Variables.getController() + " controllers and " + Variables.getPlaceholder() + " placeholders!");
+                if (Variables.getPage() > 0) Console.out.println("Loaded " + Variables.getPage() + " web pages!");
+                if (Variables.getStatics() > 0) Console.out.println("Loaded " + Variables.getStatics() + " static files!");
+                if (Variables.getController() > 0 && Variables.getPlaceholder() > 0) Console.out.println("Loaded " + Variables.getController() + " controllers and " + Variables.getPlaceholder() + " placeholders!");
 
                 Console.out.println("Starting a server...");
 
@@ -51,6 +61,8 @@ public abstract class WebApplication {
                 application.server.start();
 
                 isLaunched = true;
+
+                break;
             }
         }
 
@@ -82,9 +94,20 @@ public abstract class WebApplication {
      * <p>Метод инициализации конфига и веб-сервера.</p>
      * @since 1.0
      */
-    private void init() {
+    private void init(String[] args) {
+        String conf = "main";
+        for (String arg : args) {
+            if (arg.startsWith("--br-main:")) {
+                conf = arg.replace("--br-main:", "");
+                break;
+            }
+        }
+        Console.out.println("Using \"" + conf + "\" main configuration...");
+
         config = new TOMLObject(Resources.getResourceAsContent("config.toml"));
-        server = new WebServer(config.getString("main.ip"), config.getInt("main.port"));
+        Variables.setConfig(config);
+        Variables.setConf(conf);
+        server = new WebServer(config.getString(conf + ".ip"), config.getInt(conf + ".port"));
     }
 
     /**
@@ -92,25 +115,22 @@ public abstract class WebApplication {
      * @since 1.0
      */
     private void reg() {
-        for (String name : Resources.getSubdirectories("web")) {
-            if (config.hasKey("resource." + name + ".registered")) { // Если имеет регистрацию
+        for (String file : Resources.getFilesInDirectory("web")) {
+            String name = file.replace(".html", "");
+            if (file.contains(".html") && config.hasKey("resource." + name + ".registered") && config.getBoolean("resource." + name + ".registered")) { // Если имеет регистрацию, если это true
+                String content = Resources.getResourceAsContent("web/" + name + ".html");
 
-                if (config.getBoolean("resource." + name + ".registered")) { // Если зарегистрирован
+                if (content.contains("%br:")) {
+                    String[] values = WebController.list.values().toArray(new String[0]);
+                    String[] keys = WebController.list.keySet().toArray(new String[0]);
 
-                    String content = Resources.getResourceAsContent("web/" + name + "/" + name + ".html");
-
-                    if (content.contains("%br:")) {
-                        String[] values = WebController.list.values().toArray(new String[0]);
-                        String[] keys = WebController.list.keySet().toArray(new String[0]);
-
-                        for (int i = 0; i < values.length; i++) {
-                            content = content.replace("%br:" + keys[i] + "%", values[i]);
-                        }
+                    for (int i = 0; i < values.length; i++) {
+                        content = content.replace("%br:" + keys[i] + "%", values[i]);
                     }
-
-                    server.add(config.getString("resource." + name + ".web"), content);
-                    Variables.page();
                 }
+
+                server.add(config.getString("resource." + name + ".web"), content);
+                Variables.page();
             }
         }
     }
@@ -120,8 +140,15 @@ public abstract class WebApplication {
      * @since 1.0
      */
     private void regStatics() {
-        for (String fileName : Resources.getFilesInDirectory("static")) {
-            server.add("/static/" + fileName, Resources.getResourceAsContent("static/" + fileName));
+        for (String folder : Resources.getSubdirectories("static")) {
+            for (String file : Resources.getFilesInDirectory("static/" + folder)) {
+                server.add("/" + folder + "/" + file, Resources.getResourceAsBytes("static/" + folder + "/" + file));
+                Variables.statics();
+            }
+        }
+
+        for (String file : Resources.getFilesInDirectory("static")) {
+            server.add("/static/" + file, Resources.getResourceAsBytes("static/" + file));
             Variables.statics();
         }
     }
