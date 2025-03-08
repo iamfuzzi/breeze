@@ -43,10 +43,10 @@ public class Variables {
     }
 
     private static TOMLObject config;
-    static TOMLObject getConfig() {
+    public static TOMLObject getConfig() {
         return config;
     }
-    static void setConfig(TOMLObject config) {
+    public static void setConfig(TOMLObject config) {
         Variables.config = config;
     }
 
