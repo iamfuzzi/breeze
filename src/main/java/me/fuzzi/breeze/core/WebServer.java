@@ -3,6 +3,7 @@ package me.fuzzi.breeze.core;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import me.fuzzi.breeze.util.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,36 +26,46 @@ public class WebServer {
             throw new RuntimeException(e);
         }
     }
+
     protected void start() {
         server.start();
     }
 
-    protected void add(String path, String content) {
+    protected void add(String path, byte[] content) {
         server.createContext(path, new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
-                byte[] response = content.getBytes(StandardCharsets.UTF_8);
+                try {
+                    String contentType = "text/html; charset=UTF-8";
 
-                String contentType = "text/html; charset=UTF-8";
-                if (path.endsWith(".png")) {
-                    contentType = "image/png";
-                } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
-                    contentType = "image/jpeg";
-                } else if (path.endsWith(".gif")) {
-                    contentType = "image/gif";
-                } else if (path.endsWith(".css")) {
-                    contentType = "text/css; charset=UTF-8";
-                } else if (path.endsWith(".js")) {
-                    contentType = "application/javascript; charset=UTF-8";
+                    if (path.endsWith(".png")) {
+                        contentType = "image/png";
+                    } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+                        contentType = "image/jpeg";
+                    } else if (path.endsWith(".gif")) {
+                        contentType = "image/gif";
+                    } else if (path.endsWith(".css")) {
+                        contentType = "text/css; charset=UTF-8";
+                    } else if (path.endsWith(".js")) {
+                        contentType = "application/javascript; charset=UTF-8";
+                    } else if (path.endsWith(".svg")) {
+                        contentType = "image/svg+xml";
+                    }
+                    exchange.getResponseHeaders().add("Content-Type", contentType);
+
+                    exchange.sendResponseHeaders(200, content.length);
+                    OutputStream os = exchange.getResponseBody();
+                    os.write(content);
+                    os.close();
+                } catch (Throwable e) {
+                    Logger.handleException(Thread.currentThread(), e);
                 }
-                exchange.getResponseHeaders().add("Content-Type", contentType);
-
-                exchange.sendResponseHeaders(200, response.length);
-                OutputStream os = exchange.getResponseBody();
-                os.write(response);
-                os.close();
             }
         });
+    }
+
+    protected void add(String path, String content) {
+        add(path, content.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
