@@ -1,4 +1,6 @@
-package me.fuzzi.breeze.core;
+package me.fuzzi.breeze.util;
+
+import me.fuzzi.breeze.core.WebApplication;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,17 +22,32 @@ import java.util.Scanner;
 public class Resources {
 
     /**
-     * <p>Возвращает файл и ресурсов как поток.</p>
+     * <p>Возвращает файл из ресурсов как поток.</p>
      * @param path определяет какой файл будет прочитан.
      */
-    protected static InputStream getResourceAsStream(String path) {
+    public static InputStream getResourceAsStream(String path) {
         ClassLoader classLoader = WebApplication.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(path);
         return inputStream;
     }
 
     /**
-     * <p>Возвращает файл и ресурсов как его содержимое.</p>
+     * <p>Возвращает файл из ресурсов как массив байтов.</p>
+     * @param path определяет какой файл будет прочитан.
+     */
+    public static byte[] getResourceAsBytes(String path) {
+        try (InputStream inputStream = getResourceAsStream(path)) {
+            if (inputStream == null) {
+                throw new RuntimeException("Resource not found: " + path);
+            }
+            return inputStream.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read resource: " + path, e);
+        }
+    }
+
+    /**
+     * <p>Возвращает файл из ресурсов как его содержимое.</p>
      * @param path определяет какой файл будет прочитан.
      */
     public static String getResourceAsContent(String path) {
@@ -44,10 +61,10 @@ public class Resources {
     }
 
     /**
-     * <p>Возвращает список всех папок, которые находятся в нужной папке.</p>
+     * <p>Возвращает список всех папок, которые находятся в нужной папке в ресурсах.</p>
      * @param path определяет родительскую папку.
      */
-    protected static String[] getSubdirectories(String path) {
+    public static String[] getSubdirectories(String path) {
         List<String> directories = new ArrayList<>();
 
         URL resourceUrl = WebApplication.class.getClassLoader().getResource(path);
@@ -73,10 +90,10 @@ public class Resources {
     }
 
     /**
-     * <p>Возвращает список всех файлов, которые находятся в нужной папке.</p>
+     * <p>Возвращает список всех файлов, которые находятся в нужной папке в ресурсах.</p>
      * @param path определяет родительскую папку.
      */
-    protected static String[] getFilesInDirectory(String path) {
+    public static String[] getFilesInDirectory(String path) {
         List<String> files = new ArrayList<>();
 
         URL resourceUrl = WebApplication.class.getClassLoader().getResource(path);
