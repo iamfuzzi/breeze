@@ -1,5 +1,7 @@
 package me.fuzzi.breeze.core;
 
+import me.fuzzi.breeze.util.Console;
+
 import java.util.HashMap;
 import java.util.Map;
 
